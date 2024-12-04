@@ -1,37 +1,9 @@
-// "use client"
-// import { useSession, signOut } from 'next-auth/react';
-
-// export default function Dashboard() {
-//   const { data: session, status } = useSession();
-
-//   if (status === 'loading') {
-//     return <p>Loading...</p>;
-//   }
-
-//   if (status === 'unauthenticated') {
-//     return <p>Access Denied</p>;
-//   }
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-//       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-//         <h1 className="text-2xl font-bold mb-6">Welcome to the Dashboard</h1>
-//         <p className="mb-4">Email: {session?.user?.email}</p>
-//         <button
-//           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//           onClick={() => signOut()}
-//         >
-//           Sign Out
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, Menu } from "antd";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import {
   BellOutlined,
   CloseOutlined,
@@ -50,18 +22,26 @@ import Link from "next/link";
 const MainLayout = ({ children }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const toggleSidebar = () => {
-    setSidebarVisible(!isSidebarVisible);
-  };
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   if (status === "loading") {
     return <p>Loading...</p>;
   }
 
   if (status === "unauthenticated") {
-    return <p>Access Denied</p>;
+    return null; 
   }
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!isSidebarVisible);
+  };
+
   return (
     <div className="layout-container">
       <header className="fixed-header flex items-center justify-between px-4">
@@ -78,7 +58,7 @@ const MainLayout = ({ children }) => {
               size={25}
               src="https://randomuser.me/api/portraits/women/44.jpg"
             />
-            <span className=" username text-white">Adrian Nadar</span>
+            <span className="username text-white">Adrian Nadar</span>
           </div>
           <div className="w-[30px] h-[30px] bg-white flex items-center justify-center rounded-full">
             <BellOutlined style={{ fontSize: "13px", color: "#C3CAD9" }} />
@@ -127,7 +107,7 @@ const SidebarContent = ({ isSidebarVisible, toggleSidebar }) => {
     {
       key: "dashboard",
       icon: <DashboardOutlined />,
-      label: <Link href="/dashboardContent">Dashboard</Link>,
+      label: <Link href="/dashboard">Dashboard</Link>,
     },
     {
       key: "templates",
@@ -136,11 +116,11 @@ const SidebarContent = ({ isSidebarVisible, toggleSidebar }) => {
       children: [
         {
           key: "template1",
-          label: <Link href="/newTemplate">Create New Template</Link>,
+          label: <Link href="/dashboard/newTemplate">Create New Template</Link>,
         },
         {
           key: "template2",
-          label: <Link href="/allTemplate">All Templates</Link>,
+          label: <Link href="/dashboard/allTemplate">All Templates</Link>,
         },
       ],
     },
@@ -151,15 +131,15 @@ const SidebarContent = ({ isSidebarVisible, toggleSidebar }) => {
       children: [
         {
           key: "Contact1",
-          label: <Link href="/contacts">All Contact</Link>,
+          label: <Link href="/dashboard/contacts">All Contact</Link>,
         },
         {
           key: "segment",
-          label: <Link href="/segments">Segments</Link>,
+          label: <Link href="/dashboard/segments">Segments</Link>,
         },
         {
           key: "Tags",
-          label: <Link href="/tags">Tags</Link>,
+          label: <Link href="/dashboard/tags">Tags</Link>,
         },
       ],
     },
@@ -170,19 +150,18 @@ const SidebarContent = ({ isSidebarVisible, toggleSidebar }) => {
       children: [
         {
           key: "All Automation",
-          label: <Link href="/automation">All Automation</Link>,
+          label: <Link href="/dashboard/automation">All Automation</Link>,
         },
       ],
     },
-
     {
       key: "integration",
       icon: <ApiOutlined />,
       label: "Integration",
       children: [
         {
-          key: "All Automation",
-          label: <Link href="/integration">Integration</Link>,
+          key: "All Integration",
+          label: <Link href="/dashboard/integration">Integration</Link>,
         },
       ],
     },
@@ -217,3 +196,5 @@ const SidebarContent = ({ isSidebarVisible, toggleSidebar }) => {
 };
 
 export default MainLayout;
+
+
